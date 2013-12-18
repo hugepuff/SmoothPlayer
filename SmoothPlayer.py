@@ -1,19 +1,38 @@
 ###################
 ## Smooth Player WebPage Generator
 ###################
+## V1.1
+## Use specific server address
+###################
 ## V1.0
 ## Only for specific Virtual server, more updates will be added if requires
+## Rewrite Function addressReplace()
 ####################
 ## Wei Chen
 ## weiche2@cisco.com
 ####################
 
 import os
+#DATA Dictionary define
+Dict_FTPtoHTTP={}
+Dict_FTPtoHTTP["\\\\abr-nas2.cisco.com\\scratch\\"]='http://sbc-esx7-vm1.cisco.com/freenas/'
+
 #FUNCTION address replacement
-def addressReplace(folderLoc):
-    folderLoc=folderLoc.replace("\\\\abr-nas2.cisco.com\\scratch\\",'http://sbc-esx7-vm1.cisco.com/freenas/')
-    folderLoc=folderLoc.replace('\\','/')
+def addressReplace(addrDict,folderLoc):
+#    folderLoc=folderLoc.replace("\\\\abr-nas2.cisco.com\\scratch\\",'http://sbc-esx7-vm1.cisco.com/freenas/')
+#    folderLoc=folderLoc.replace('\\','/')
+#    folderLoc+='/'
+# stand address should be folder/name or folder\name. so we need to add a \
+    folderLoc+='\\'
+# check if the server is in the list
+    for ftpAddr in addrDict.keys():
+        if ftpAddr in folderLoc:
+#test-- if we found that in the dict            print("good!")
+            folderLoc=folderLoc.replace(ftpAddr,addrDict.get(ftpAddr))
+            folderLoc=folderLoc.replace('\\','/')
+            break    
     return folderLoc
+
 #FUNCTION createHTML
 def generateWebPage(address,filename):
     fileWebPage = open(filename[:-4]+".html",'w')
@@ -83,7 +102,7 @@ def generateWebPage(address,filename):
     fileWebPage.writelines("          <param name=\"minRuntimeVersion\" value=\"4.0.50401.0\" />\n")
     fileWebPage.writelines("          <param name=\"autoUpgrade\" value=\"true\" />\n")
     fileWebPage.writelines("          <param name=\"enableGPUAcceleration\" value=\"true\" />\n")
-    fileWebPage.writelines("                  <param name=\"InitParams\" value=\"IsStartPositionOffset=false,AutoPlay=true,mediaurl="+address+'/'+fileName+"/manifest\" />\n")
+    fileWebPage.writelines("                  <param name=\"InitParams\" value=\"IsStartPositionOffset=false,AutoPlay=true,mediaurl="+address+fileName+"/manifest\" />\n")
     fileWebPage.writelines("          <a href=\"http://go.microsoft.com/fwlink/?LinkID=149156&v=4.0.50401.0\" style=\"text-decoration:none\">\n")
     fileWebPage.writelines("               <img src=\"http://go.microsoft.com/fwlink/?LinkId=161376\" alt=\"Get Microsoft Silverlight\" style=\"border-style:none\"/>\n")
     fileWebPage.writelines("          </a>\n")
@@ -103,7 +122,7 @@ folderLocation = os.getcwd()
 #3.3 fileList = os.listdir(path=folderLocation) 
 fileList = os.listdir(folderLocation)
 #prepare name to write into HTML
-folderLocation = addressReplace(folderLocation)
+folderLocation = addressReplace(Dict_FTPtoHTTP,folderLocation)
 #!!UPDATE POTENTIAL create a dictionary for store those new servers
 # create a file result to list all ism file
 #test--fileIsmvList = open('ismv_list.txt', 'w')
@@ -116,3 +135,4 @@ for fileName in fileList:
 #test--        fileIsmvList.write(fileName)
 #test--fileIsmvList.close()
 # !TODO delete the result.txt file
+raw_input()
