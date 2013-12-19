@@ -1,6 +1,9 @@
 ###################
 ## Smooth Player WebPage Generator
 ###################
+## V1.2
+## With Pyinstaller single-file mode, update function to extract the smooth player vplayer_latest.xap from single exe file
+###################
 ## V1.1
 ## Use specific server address
 ###################
@@ -12,10 +15,16 @@
 ## weiche2@cisco.com
 ####################
 
-import os
+import shutil, os
 #DATA Dictionary define
 Dict_FTPtoHTTP={}
 Dict_FTPtoHTTP["\\\\abr-nas2.cisco.com\\scratch\\"]='http://sbc-esx7-vm1.cisco.com/freenas/'
+
+#FUNCTION for Pyinstaller
+def resource_path(relative):
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, relative)
+    return os.path.join(relative)
 
 #FUNCTION address replacement
 def addressReplace(addrDict,folderLoc):
@@ -134,5 +143,9 @@ for fileName in fileList:
 #test--        fileName = folderLocation + fileName + "\n"
 #test--        fileIsmvList.write(fileName)
 #test--fileIsmvList.close()
-# !TODO delete the result.txt file
-raw_input()
+#export Smooth player
+playerFileName = "vplayer_latest.xap"
+playerRelativeDir = ""
+PlayerRelativeAddr = os.path.join(playerRelativeDir,playerFileName)
+playerInternalFileAddr = resource_path(PlayerRelativeAddr)
+shutil.copyfile(playerInternalFileAddr,PlayerRelativeAddr)
