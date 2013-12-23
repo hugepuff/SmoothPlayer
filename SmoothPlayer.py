@@ -18,7 +18,7 @@
 import shutil, os
 #DATA Dictionary define
 Dict_FTPtoHTTP={}
-Dict_FTPtoHTTP["\\\\abr-nas2.cisco.com\\scratch\\"]='http://sbc-esx7-vm1.cisco.com/freenas/'
+Dict_FTPtoHTTP["\\\\abr-nas2.cisco.com\\scratch\\"]='sbc-esx7-vm1.cisco.com/freenas/'
 
 #FUNCTION for Pyinstaller
 def resource_path(relative):
@@ -38,8 +38,9 @@ def addressReplace(addrDict,folderLoc):
         if ftpAddr in folderLoc:
 #test-- if we found that in the dict            print("good!")
             folderLoc=folderLoc.replace(ftpAddr,addrDict.get(ftpAddr))
-            folderLoc=folderLoc.replace('\\','/')
             break    
+    folderLoc=folderLoc.replace('\\','/')
+    folderLoc="http://"+folderLoc
     return folderLoc
 
 #FUNCTION createHTML
@@ -110,8 +111,7 @@ def generateWebPage(address,filename):
     fileWebPage.writelines("          <param name=\"background\" value=\"white\" />\n")
     fileWebPage.writelines("          <param name=\"minRuntimeVersion\" value=\"4.0.50401.0\" />\n")
     fileWebPage.writelines("          <param name=\"autoUpgrade\" value=\"true\" />\n")
-    fileWebPage.writelines("          <param name=\"enableGPUAcceleration\" value=\"true\" />\n")
-    fileWebPage.writelines("                  <param name=\"InitParams\" value=\"IsStartPositionOffset=false,AutoPlay=true,mediaurl="+address+fileName+"/manifest\" />\n")
+    fileWebPage.writelines("          <param name=\"InitParams\" value=\"selectedcaptionstream=captions,AutoPlay=true,mediaurl="+address+fileName+"/manifest\" />\n")
     fileWebPage.writelines("          <a href=\"http://go.microsoft.com/fwlink/?LinkID=149156&v=4.0.50401.0\" style=\"text-decoration:none\">\n")
     fileWebPage.writelines("               <img src=\"http://go.microsoft.com/fwlink/?LinkId=161376\" alt=\"Get Microsoft Silverlight\" style=\"border-style:none\"/>\n")
     fileWebPage.writelines("          </a>\n")
